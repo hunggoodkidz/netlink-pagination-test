@@ -1,0 +1,54 @@
+// prisma/schema.prisma
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  user_id    Int      @id @default(autoincrement())
+  name       String
+  email      String   @unique
+  created_at DateTime @default(now())
+  orders     Order[]
+}
+
+model Product {
+  product_id    Int       @id @default(autoincrement())
+  product_name  String
+  price         Decimal   @db.Decimal(10,2)
+  stock         Int       @default(0)
+  created_at    DateTime  @default(now())
+  orderProducts OrderProduct[]
+}
+
+model Order {
+  order_id      Int       @id @default(autoincrement())
+  user_id       Int
+  order_date    DateTime  @default(now())
+  total_amount  Decimal?  @db.Decimal(10,2)
+  user          User      @relation(fields: [user_id], references: [user_id])
+  orderProducts OrderProduct[]
+
+  @@index([user_id])
+  @@index([order_date])
+  @@index([user_id, order_date(sort: Desc)])
+  @@index([total_amount])
+}
+
+model OrderProduct {
+  order_product_id Int      @id @default(autoincrement())
+  order_id         Int
+  product_id       Int
+  quantity         Int      @default(1)
+  price            Decimal  @db.Decimal(10,2)
+  order            Order    @relation(fields: [order_id], references: [order_id])
+  product          Product  @relation(fields: [product_id], references: [product_id])
+
+  @@index([order_id])
+  @@index([product_id])
+}
