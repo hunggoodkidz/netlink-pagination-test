@@ -4,15 +4,18 @@ import { getUsers, getUserById, createUser, updateUser, deleteUser } from '../se
 // GET /api/users?cursor=<cursor>
 export const getUsersController: RequestHandler = async (req, res, next) => {
     try {
-        const { cursor } = req.query;
-        const parsedCursor = cursor ? Number(cursor) : undefined;
-        const result = await getUsers(parsedCursor);
-        res.json(result);
+      const { cursor, direction } = req.query;
+      const parsedCursor = cursor ? Number(cursor) : undefined;
+      // Default to 'next' if no direction provided
+      const dir = direction === 'prev' ? 'prev' : 'next';
+      const result = await getUsers(parsedCursor, dir);
+      res.json(result);
     } catch (error) {
-        console.error('Error fetching users:', error);
-        next(error);
+      console.error('Error fetching users:', error);
+      next(error);
     }
-};
+  };
+  
 
 // GET /api/users/:id
 export const getUserByIdController: RequestHandler = async (req, res, next) => {

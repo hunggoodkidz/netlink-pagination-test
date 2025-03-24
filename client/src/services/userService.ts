@@ -30,9 +30,13 @@ export const createUser = async (name: string, email: string): Promise<User> => 
   return response.data;
 };
 
-// Update an existing user
+// Update an existing user without sending undefined values
 export const updateUser = async (id: number, name?: string, email?: string): Promise<User> => {
-  const response = await api.put<User>(`/api/users/${id}`, { name, email });
+  const payload: { name?: string; email?: string } = {};
+  if (name !== undefined) payload.name = name;
+  if (email !== undefined) payload.email = email;
+  
+  const response = await api.put<User>(`/api/users/${id}`, payload);
   return response.data;
 };
 

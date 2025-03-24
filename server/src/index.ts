@@ -7,9 +7,13 @@ import orderRoutes from './routes/orderRoutes';
 import productRoutes from './routes/productRoutes';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger';
+import cors from 'cors';
 
 const app = express();
 const PORT = env.port;
+
+app.use(cors()); // <-- Enable CORS for all routes by default
+
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
