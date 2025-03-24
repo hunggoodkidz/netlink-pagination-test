@@ -4,6 +4,7 @@ import {
   getOrderByIdController,
   createOrderController,
   updateOrderController,
+  getLatestOrderController,
   deleteOrderController
 } from '../controllers/orderController';
 
@@ -23,5 +24,8 @@ router.put('/:id', updateOrderController);
 
 // DELETE /api/orders/:id - Delete an order
 router.delete('/:id', deleteOrderController);
+
+// New endpoint for fetching the latest order for a user
+router.get('/latest', getLatestOrderController);
 
 export default router;

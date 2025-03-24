@@ -5,6 +5,7 @@ import {
     createOrder,
     updateOrder,
     deleteOrder,
+    getLatestOrderRaw,
     OrderCreateInput,
     OrderUpdateInput
 } from '../services/orderService';
@@ -73,6 +74,27 @@ export const deleteOrderController: RequestHandler = async (req, res, next) => {
         res.json({ message: 'Order deleted successfully' });
     } catch (error) {
         console.error('Error deleting order:', error);
+        next(error);
+    }
+};
+
+// GET /api/orders/latest?userId=<userId>
+// Returns the most recent order (with product details) for a given user.
+export const getLatestOrderController: RequestHandler = async (req, res, next) => {
+    try {
+        const userId = Number(req.query.userId);
+        if (!userId) {
+            res.status(400).json({ error: 'userId query parameter is required' });
+            return;
+        }
+        const latestOrder = await getLatestOrderRaw(userId);
+        if (!latestOrder) {
+            res.status(404).json({ error: 'No orders found for this user' });
+            return;
+        }
+        res.json(latestOrder);
+    } catch (error) {
+        console.error('Error fetching latest order:', error);
         next(error);
     }
 };

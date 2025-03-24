@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import redis from 'redis';
+import { createClient } from 'redis';
 import { env } from '../config/env';
 
-const redisClient = redis.createClient({
+// Create a Redis client using the URL from environment variables
+const redisClient = createClient({
   url: env.redisUrl || 'redis://localhost:6379'
 });
 
@@ -33,7 +34,6 @@ export const cacheMiddleware = (ttl: number) => {
     // Override res.json to cache the response before sending it
     const originalJson = res.json.bind(res);
     res.json = (body: any) => {
-      // Set cache asynchronously without awaiting it
       redisClient.setEx(key, ttl, JSON.stringify(body))
         .catch(err => console.error('Error setting Redis cache:', err));
       return originalJson(body);
