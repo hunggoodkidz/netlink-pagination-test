@@ -11,12 +11,13 @@ Back-end: NodeJS, ExpressJS, Typescript, Redis, PostgreSQL, Prisma, Swagger, Mid
 ### Database and Design
 
 <p>
-<img src="images/data_modelling .png"/> 
+<img src="images/data_modelling.png"/> 
 </p>
 
-
 ## API Endpoints
+
 Users:
+
 ```
 GET /api/users?cursor=... — Paginated user list (cursor-based)
 
@@ -30,6 +31,7 @@ DELETE /api/users/:id — Delete a user
 ```
 
 Products:
+
 ```
 
 GET /api/products — List products (with optional caching)
@@ -45,6 +47,7 @@ DELETE /api/products/:id — Delete a product
 ```
 
 Orders:
+
 ```
 GET /api/orders?userId=...&cursor=... — Paginated orders list
 
@@ -88,9 +91,11 @@ By watching the video so I conclude Cursor-based Method is a best option.
 ## Redis Caching Middleware Explanation
 
 ### Purpose of the Middleware
+
 A Redis caching middleware intercepts responses for read-heavy endpoints, stores the results in Redis, and serves subsequent identical requests from the cache instead of hitting the database. This significantly reduces database load and improves response times.
 
 ### When to Use Caching
+
 - **High-traffic, Read-heavy Endpoints:**  
   If certain endpoints (e.g., product listings, user lists) receive many GET requests but the underlying data changes infrequently, caching can drastically reduce repeated database queries.
 - **Performance Improvement Under Load:**  
@@ -99,6 +104,7 @@ A Redis caching middleware intercepts responses for read-heavy endpoints, stores
   If your application can tolerate data that’s a few seconds or minutes out of date, caching is a good fit.
 
 ### When **Not** to Use Caching
+
 - **Highly Dynamic or Real-time Data:**  
   If the data changes constantly (e.g., live transaction status, chat messages), cached results may become stale almost immediately.
 - **Strict Consistency Requirements:**  
@@ -114,20 +120,23 @@ By carefully choosing which endpoints to cache and setting appropriate TTLs (tim
 
 To improve query performance in a high-traffic e-commerce system with millions of orders, the following optimizations have been implemented:
 
-- **Indexing:**  
+- **Indexing:**
+
   - Indexes are created on frequently queried columns such as `user_id` and `order_date` in the `orders` table.
   - Foreign key columns (e.g., `order_id` in `order_products` and `product_id` in `products`) are indexed to speed up join operations.
 
-- **Partitioning:**  
+- **Partitioning:**
+
   - For very large datasets, partitioning the `orders` table (e.g., by date or user) can reduce the number of rows scanned per query.
 
-- **Efficient Querying:**  
+- **Efficient Querying:**
+
   - Filtering with `WHERE` clauses limits the scanned data.
   - Ordering with `ORDER BY` ensures that the most recent records are returned first.
   - The use of `LIMIT` restricts the number of rows returned.
   - Cursor-based (keyset) pagination is employed for efficient navigation through large datasets, avoiding the pitfalls of OFFSET-based pagination.
 
-- **Caching:**  
+- **Caching:**
   - Redis caching middleware is implemented on read-heavy GET endpoints to reduce database load.
   - Cache invalidation is performed on data modifications (POST, PUT, DELETE) to ensure users always receive up-to-date information.
 
@@ -136,7 +145,7 @@ To improve query performance in a high-traffic e-commerce system with millions o
 Below is the optimized SQL query used to fetch the latest 10 orders for a given user, including product details:
 
 ```sql
-SELECT 
+SELECT
   o.order_id,
   o.order_date,
   o.total_amount,
@@ -151,7 +160,9 @@ WHERE o.user_id = ${user_id}
 ORDER BY o.order_date DESC
 LIMIT 10;
 ```
+
 Explanation:
+
 - **Filtering by User**  
   The clause `WHERE o.user_id = $1` restricts the query to orders for a specific user, significantly reducing the dataset that the database must scan.
 
@@ -167,8 +178,8 @@ Explanation:
 - **Parameterization**  
   The use of the `${user_id}` placeholder allows the query to be parameterized. This not only prevents SQL injection but also enables PostgreSQL to cache the query plan, further optimizing performance for repeated calls.
 
-
 ## Why Use a Raw SQL Query Here?
+
 Efficiency:
 When dealing with millions of orders, a well-indexed raw SQL query can be more efficient than an ORM abstraction.
 
@@ -177,8 +188,6 @@ The query leverages filtering, ordering, and limiting to only fetch the most rec
 
 Control:
 Writing a raw query gives you finer control over joins and performance optimizations, which is critical in a high-traffic e-commerce system.
-
-
 
 ## Frontend Explanation:
 
@@ -190,12 +199,13 @@ Build a React web application that displays a large list of users (over 100,000)
 - **Pagination:**  
   The user list is divided into smaller pages using cursor-based (or offset-based) pagination. This ensures that only a subset of users is rendered at a time, reducing the data processed and improving performance.
 
-- **Optimized Rendering:**  
-  - **Memoization:** Use `React.memo` for components that do not change unless their props change.  
-  - **Virtualization:** Utilize libraries like `react-window` to render only the visible portion of the list, reducing the number of DOM elements and improving rendering performance.  
+- **Optimized Rendering:**
+  - **Memoization:** Use `React.memo` for components that do not change unless their props change.
+  - **Virtualization:** Utilize libraries like `react-window` to render only the visible portion of the list, reducing the number of DOM elements and improving rendering performance.
   - **Efficient State Management:** Implement state and effect hooks (`useState`, `useEffect`, `useCallback`) so that the component re-renders only when necessary.
 
-**Benefits:**  
+**Benefits:**
+
 - Faster load times and smoother scrolling due to reduced DOM load.
 - Lower memory consumption by rendering only a subset of the entire dataset.
 - Enhanced user experience through efficient UI updates, especially when dealing with very large datasets.
