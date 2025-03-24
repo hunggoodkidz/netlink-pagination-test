@@ -8,49 +8,12 @@ Front-end: React, Typescript, TailwindCSS (v4.0), Axios, Redux, react-paginate, 
 
 Back-end: NodeJS, ExpressJS, Typescript, Redis, PostgreSQL, Prisma, Swagger, Middleware
 
+### Database and Design
 
-### Project Structure:
+<p>
+<img src="images/data_modelling .png"/> 
+</p>
 
-```
-server (Backend/)
-├── .env                      # Environment variables (including DATABASE_URL)
-├── package.json              # Project configuration and dependencies
-├── tsconfig.json             # TypeScript configuration
-├── prisma/
-│   └── schema.prisma         # Prisma schema file (database models)
-├── src/
-│   ├── config/
-│   │   └── env.ts            # Environment configuration
-│   │
-│   ├── controllers/          # HTTP endpoint logic
-│   │   ├── userController.ts       # User-related business logic
-│   │   ├── orderController.ts      # Order-related business logic
-│   │   └── productController.ts    # Product-related business logic
-│   │
-│   ├── db/
-│   │   └── prisma.ts         # Prisma client instance (exported for use in your code)
-│   │
-│   ├── middleware/           # Custom middleware
-│   │   ├── cache.ts          # Redis caching middleware
-│   │   └── errorHandler.ts   # Centralized error handling middleware
-│   │
-│   ├── routes/               # API route definitions
-│   │   ├── userRoutes.ts     # Routes for user-related endpoints
-│   │   ├── orderRoutes.ts    # Routes for order-related endpoints
-│   │   └── productRoutes.ts  # Routes for product-related endpoints
-│   │
-│   ├── services/             # Business logic, separate from HTTP layer
-│   │   ├── userServices.ts   # User-related services
-│   │   ├── orderServices.ts  # Order-related services
-│   │   └── productServices.ts# Product-related services
-│   │
-│   ├── utils/                # Utility functions
-│   │   ├── pagination.ts     # Support for cursor-based pagination
-│   │   └── logger.ts         # System logging utilities
-│   │
-│   └── index.ts              # Main Express server entry point
-└── README.md                 # Project documentation
-```
 
 ## API Endpoints
 Users:
